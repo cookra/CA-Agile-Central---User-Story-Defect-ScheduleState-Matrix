@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>matrix</title>
+
+    <script type="text/javascript" src="/apps/2.1/sdk.js"></script>
+
+    <script type="text/javascript">
+        Rally.onReady(function () {
+                Ext.define('CustomApp', {
+    extend: 'Rally.app.App',
+    componentCls: 'app',
+    launch: function () {
+        this._whatDoYouNeedToSee();
+    },
+    _whatDoYouNeedToSee: function () {
+        var query = [
+            ['ScheduleState', '=', 'Backlog', 'or'],
+            ['ScheduleState', '=', 'Defined', 'or'],
+            ['ScheduleState', '=', 'In-Progress', 'or'],
+            ['ScheduleState', '=', 'Completed', 'or'],
+            ['ScheduleState', '=', 'Accepted', 'or'],
+            ['ScheduleState', '=', 'Live']
+        ];
+        this._storeUserStories(query);
+    },
+    _storeUserStories: function (query) {
+        var theQuery = '';
+        for (var x = 0; x < query.length; x++) {
+            for (var i = 0; i < query[x].length; i++) {
+                theQuery += query[x][i] + ' ';
+            }
+        }
+        Ext.create('Rally.data.wsapi.Store', { // create store on the App (via this) so the code above can test for it's existence!
+            model: 'User Story',
+            autoLoad: true, // <----- Don't forget to set this to true! heh
+            filters: theQuery,
+            limit: Infinity,
+            listeners: {
+                load: function (myStore, myData) {
+                    console.log('>>>> Store RETURNING:', myStore);
+                    this._storeDefects(myData, query);
+                },
+                scope: this // This tells the wsapi data store to forward pass along the app-level context into ALL listener functions
+            },
+            fetch: ['FormattedID', 'Name', 'ScheduleState'] // Look in the WSAPI docs online to see all fields available!
+        });
+    },
+    _storeDefects: function (storyData, query) {
+        var theQuery = '';
+        for (var x = 0; x < query.length; x++) {
+            for (var i = 0; i < query[x].length; i++) {
+                theQuery += query[x][i] + ' ';
+            }
+        }
+        Ext.create('Rally.data.wsapi.Store', { // create store on the App (via this) so the code above can test for it's existence!
+            model: 'Defect',
+            autoLoad: true, // <----- Don't forget to set this to true! heh
+            filters: theQuery,
+            limit: Infinity,
+            listeners: {
+                load: function (myStore, myData) {
+                    console.log('>>>> Store RETURNING:', myStore);
+                    this._build(storyData, myData);
+                },
+                scope: this // This tells the wsapi data store to forward pass along the app-level context into ALL listener functions
+            },
+            fetch: ['FormattedID', 'Name', 'ScheduleState'] // Look in the WSAPI docs online to see all fields available!
+        });
+    },
+    _build: function (storyData, defectData) {
+        var html = '';
+        var tS = this._filter(storyData);
+        var tD = this._filter(defectData);
+
+        var tSt = tS.reduce(add, 0);
+        var tDt = tS.reduce(add, 0);
+
+        function add(a, b) {
+            return a + b;
+        }
+
+        var tSs = this._sizer(tS, tSt, 'story');
+        var tDs = this._sizer(tD, tDt, 'defect');
+
+        html =
+            '<table width="100%" border="0" class="table";>' +
+            '<tbody>' +
+            '<tr>' +
+            '<td class="table-row-header flex1">Schedule State</td>' +
+            '<td class="table-row-header-label-story">User Stories (' + tSt + ')</td>' +
+            '<td class="table-row-header-percentage-story">%</td>' +
+            '<td class="table-row-header-label-defect">Defects (' + tDt + ')</td>' +
+            '<td class="table-row-header-percentage-defect">%</td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td class="table-row-label flex1">Backlog</td>' +
+            '<td class="data-story">' + tS[0] + '</td>' +
+            '<td class="graph-story">' + tSs[0] + '</td>' +
+            '<td class="data-defect">' + tD[0] + '</td>' +
+            '<td class="graph-defect">' + tDs[0] + '</td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td class="table-row-label flex1">Defined</td>' +
+            '<td class="data-story">' + tS[1] + '</td>' +
+            '<td class="graph-story">' + tSs[1] + '</td>' +
+            '<td class="data-defect">' + tD[1] + '</td>' +
+            '<td class="graph-defect">' + tDs[1] + '</td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td class="table-row-label flex1">In-Progress</td>' +
+            '<td class="data-story">' + tS[2] + '</td>' +
+            '<td class="graph-story">' + tSs[2] + '</td>' +
+            '<td class="data-defect">' + tD[2] + '</td>' +
+            '<td class="graph-defect">' + tDs[2] + '</td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td class="table-row-label flex1">Completed</td>' +
+            '<td class="data-story">' + tS[3] + '</td>' +
+            '<td class="graph-story">' + tSs[3] + '</td>' +
+            '<td class="data-defect">' + tD[3] + '</td>' +
+            '<td class="graph-defect">' + tDs[3] + '</td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td class="table-row-label green">Accepted</td>' +
+            '<td class="data-story green">' + tS[4] + '</td>' +
+            '<td class="graph-story green">' + tSs[4] + '</td>' +
+            '<td class="data-defect green">' + tD[4] + '</td>' +
+            '<td class="graph-defect green">' + tDs[4] + '</td>' +
+            '</tr>' +
+            '<tr>' +
+            '<td class="table-row-label green">Live</td>' +
+            '<td class="data-story green">' + tS[5] + '</td>' +
+            '<td class="graph-story green">' + tSs[5] + '</td>' +
+            '<td class="data-defect green">' + tD[5] + '</td>' +
+            '<td class="graph-defect green">' + tDs[5] + '</td>' +
+            '</tr>' +
+            '</tbody>' +
+            '</table>';
+        this.add({
+            xtype: 'panel',
+            html: html,
+            height: 196,
+            bodyStyle: {
+                "background-color": "#172643"
+            },
+        });
+    },
+    _filter: function (myData) {
+        var tB, tD, tP, tC, tA, tL = 0;
+        var tS = [];
+        tB = this._filterWorker(myData, 'Backlog');
+        tD = this._filterWorker(myData, 'Defined');
+        tP = this._filterWorker(myData, 'In-Progress');
+        tC = this._filterWorker(myData, 'Completed');
+        tA = this._filterWorker(myData, 'Accepted');
+        tL = this._filterWorker(myData, 'Live');
+        tS = [tB, tD, tP, tC, tA, tL];
+        return tS;
+    },
+    _filterWorker: function (myData, match) {
+        var x = 0;
+        for (var i = 0; i < myData.length; ++i) {
+            if (myData[i].raw.ScheduleState === match) {
+                console.log('tB: ', myData[i].raw.ScheduleState);
+                x++;
+            }
+        }
+        return x;
+    },
+
+    _sizer: function (myData, total, whatAmI) {
+        var x = [];
+        for (var i = 0; i < myData.length; ++i) {
+            console.log('l ', i, total, myData[i], myData[i] / total * 100);
+            var width = myData[i] / total * 100;
+            width = width - width % 1;
+            x[i] = '<div class="graph-wrapper"><div class="graph-numeric-' + whatAmI + '">' + width + '%</div><div class="graph-background"><div class="graph-' + whatAmI + '" style="width:' + width + 'px">&nbsp;</div></div></div></div>';
+
+        }
+        return x;
+    },
+});
+
+            Rally.launchApp('CustomApp', {
+                name:"matrix",
+	            parentRepos:""
+            });
+
+        });
+    </script>
+
+
+
+    <style type="text/css">
+        .app {
+  /* Add app styles here */
+}
+.data-story {
+  color: #9DE2ED;
+  font-weight: bold;
+  text-align: center;
+  width: 100px;
+}
+.data-defect {
+  color: #FF00A9;
+  font-weight: bold;
+  text-align: center;
+  width: 100px;
+}
+.graph-wrapper {
+  color: white;
+  text-align: center;
+  font-weight: bold;
+  width: 180px;
+}
+.graph-numeric-story {
+  float: left;
+  color: #172643;
+  width: 30px;
+  text-align: left;
+  padding: 2px 0;
+  text-align: center;
+}
+.graph-numeric-defect {
+  float: left;
+  color: #172643;
+  width: 30px;
+  text-align: left;
+  padding: 2px 0;
+  text-align: center;
+}
+.graph-story {
+  float: left;
+  background: #9DE2ED;
+  border: 1px solid black;
+}
+.graph-defect {
+  float: left;
+  background: #FF00A9;
+  border: 1px solid black;
+}
+.graph-background {
+  float: left;
+  height: 100%;
+  background: repeating-linear-gradient(90deg, #172643, #172643 1px, #1d3154 1px, #1d3154 2px);
+  padding: 2px;
+  width: 150px;
+}
+.table {
+  padding: 2px;
+  background: #172643;
+}
+.table-row-header {
+  color: #172643;
+  font-size: 14px;
+  padding: 2px;
+  background: #9DE2ED;
+}
+.table-row-header-percentage-story {
+  color: #172643;
+  font-size: 14px;
+  padding: 2px;
+  background: #9DE2ED;
+  width: 180px;
+}
+.table-row-header-percentage-defect {
+  color: #172643;
+  font-size: 14px;
+  padding: 2px;
+  background: #FF00A9;
+  width: 180px;
+}
+.table-row-header-label-story {
+  color: #172643;
+  font-size: 14px;
+  padding: 2px;
+  background: #9DE2ED;
+  text-align: center;
+  width: 120px;
+}
+.table-row-header-label-defect {
+  color: #172643;
+  font-size: 14px;
+  padding: 2px;
+  background: #FF00A9;
+  text-align: center;
+  width: 120px;
+}
+.table-row-label {
+  color: #9DE2ED;
+  padding: 2px;
+}
+.green {
+  color: #affa45;
+}
+.green {
+  color: #affa45;
+}
+.acc-border {
+  border: 1px solid #affa45;
+}
+/*
+        var ACColours = ['#0096DB','#004A9D','#FF3C00','#FF8D00','#FFDC00','#6F7376','#FFF','#FF0069','#41006E','#00710C'];
+        // Barclays Colours
+        var BCColours = ['#145FAC','#437EA0','#00AEEF','#FFF','#FFA000'];
+        */
+
+    </style>
+</head>
+<body>
+</body>
+</html>

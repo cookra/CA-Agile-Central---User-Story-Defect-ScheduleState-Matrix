@@ -1,0 +1,113 @@
+.app {
+     /* Add app styles here */
+}
+
+.data-story{
+    color: #9DE2ED;
+    font-weight: bold;
+    text-align: center;
+    width:100px;
+}
+.data-defect{
+    color: #FF00A9;
+    font-weight: bold;
+    text-align: center;
+    width:100px;
+}
+.graph-wrapper{
+    color: white;
+    text-align: center;
+    font-weight: bold;
+    width:180px
+}
+.graph-numeric-story{
+    float: left;
+    color: #172643;
+    width: 30px;
+    text-align: left;
+    padding:2px 0;
+    text-align: center;
+}
+.graph-numeric-defect{
+    float: left;
+    color: #172643;
+    width: 30px;
+    text-align: left;
+    padding:2px 0;
+    text-align: center;
+}
+.graph-story{
+    float: left;
+    background:#9DE2ED;
+    border:1px solid black;
+}
+.graph-defect{
+    float: left;
+    background:#FF00A9;
+    border:1px solid black;
+}
+.graph-background{
+    float: left;
+    height:100%;
+    background: repeating-linear-gradient(90deg,#172643,#172643 1px,#1D3154 1px,#1D3154 2px);
+    padding:2px;
+    width:150px;
+}
+.table{
+    padding:2px;
+    background:#172643;
+}
+.table-row-header{
+    color: #172643;
+    font-size: 14px;
+    padding:2px;
+    background:#9DE2ED;
+}
+.table-row-header-percentage-story{
+    color: #172643;
+    font-size: 14px;
+    padding:2px;
+    background:#9DE2ED;
+    width:180px
+}
+.table-row-header-percentage-defect{
+    color: #172643;
+    font-size: 14px;
+    padding:2px;
+    background:#FF00A9;
+    width:180px
+}
+.table-row-header-label-story{
+    color: #172643;
+    font-size: 14px;
+    padding:2px;
+    background:#9DE2ED;
+    text-align: center;
+    width:120px;
+}
+.table-row-header-label-defect{
+    color: #172643;
+    font-size: 14px;
+    padding:2px;
+    background:#FF00A9;
+    text-align: center;
+    width:120px;
+}
+.table-row-label{
+    color: #9DE2ED;
+    padding:2px;
+}
+.green{
+    color:#AFFA45
+}
+.green{
+    color:#AFFA45
+}
+.acc-border{
+    border:1px solid #AFFA45
+}
+/*
+        var ACColours = ['#0096DB','#004A9D','#FF3C00','#FF8D00','#FFDC00','#6F7376','#FFF','#FF0069','#41006E','#00710C'];
+        // Barclays Colours
+        var BCColours = ['#145FAC','#437EA0','#00AEEF','#FFF','#FFA000'];
+        */
