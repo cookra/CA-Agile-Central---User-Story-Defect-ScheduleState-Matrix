@@ -3,6 +3,9 @@ matrix
 
 ## Overview
 
+looks up User Stories & Defects acroos the node via their Schedule State and displays the total and count for each.
+
+
 
 ## License
 
