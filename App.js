@@ -65,7 +65,7 @@ Ext.define('CustomApp', {
         var tD = this._filter(defectData);
 
         var tSt = tS.reduce(add, 0);
-        var tDt = tS.reduce(add, 0);
+        var tDt = tD.reduce(add, 0);
 
         function add(a, b) {
             return a + b;
@@ -79,9 +79,9 @@ Ext.define('CustomApp', {
             '<tbody>' +
             '<tr>' +
             '<td class="table-row-header flex1">Schedule State</td>' +
-            '<td class="table-row-header-label-story">User Stories (' + tSt + ')</td>' +
+            '<td class="table-row-header-label-story">US (' + tSt + ')</td>' +
             '<td class="table-row-header-percentage-story">%</td>' +
-            '<td class="table-row-header-label-defect">Defects (' + tDt + ')</td>' +
+            '<td class="table-row-header-label-defect">DE (' + tDt + ')</td>' +
             '<td class="table-row-header-percentage-defect">%</td>' +
             '</tr>' +
             '<tr>' +
